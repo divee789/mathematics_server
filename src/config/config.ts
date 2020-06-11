@@ -1,7 +1,7 @@
 const config = {
   development: {
-    username: 'root',
-    password: '123456789',
+    username: process.env.DATABASE_USERNAME,
+    password: process.env.DATABASE_PASSWORD,
     database: 'mathematics_development',
     host: 'localhost',
     dialect: 'mysql',
@@ -16,8 +16,8 @@ const config = {
     // },
   },
   production: {
-    username: 'root',
-    password: '123456789',
+    username: process.env.DATABASE_USERNAME,
+    password: process.env.DATABASE_PASSWORD,
     database: 'mathematics_production',
     host: 'localhost',
     dialect: 'mysql',
