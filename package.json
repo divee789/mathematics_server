@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "set NODE_ENV=development && concurrently \"npm:tsc-watch\" \"npm:watch:dev \" ",
     "start:dev": "ts-node-dev --respawn ./src/server.ts",
     "watch:dev": "nodemon ./dist/server.js",
     "start": "node ./dist/server.js",
