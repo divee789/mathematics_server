@@ -10,11 +10,11 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: uuidv4()
       },
-      course_id: {
+      courseId: {
         type: Sequelize.UUID,
         references: { model: 'courses', key: 'id' }
       },
-      student_id: {
+      studentId: {
         type: Sequelize.UUID,
         references: { model: 'students', key: 'id' }
       },

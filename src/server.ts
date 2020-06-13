@@ -4,17 +4,19 @@
  * Module dependencies.
  */
 
+import { ApolloServer, AuthenticationError } from 'apollo-server-express';
+import jwt from 'jsonwebtoken';
 import app from './app';
-import { ApolloServer } from 'apollo-server-express';
-import db from './core/database/models';
+import models from './core/database/models';
 import schema from './graphql/schemas';
 import resolvers from './graphql/resolvers';
+import logger from './core/utilities/logger';
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3100');
+const port = normalizePort(process.env.PORT || '3100');
 app.set('port', port);
 
 /**
@@ -24,6 +26,20 @@ app.set('port', port);
 const server = new ApolloServer({
   typeDefs: schema,
   resolvers,
+  context: async ({ req }: any) => {
+    let auth;
+    const token = req.headers.authorization;
+    if (token) {
+      try {
+        auth = await jwt.verify(token, process.env.TOKEN_SECRET);
+      } catch (e) {
+        console.log(e)
+        throw new AuthenticationError('Your session expired. Sign in again.');
+      }
+    }
+
+    return { models, auth };
+  },
 });
 
 server.applyMiddleware({ app, path: '/graphql' });
@@ -32,16 +48,21 @@ server.applyMiddleware({ app, path: '/graphql' });
  * Listen on provided port, on all network interfaces.
  */
 
-db.sequelize
+models.sequelize
   .authenticate()
   .then(() => {
-    console.info('MYSQL Connection has been established successfully.');
+    logger.info('MYSQL Connection has been established successfully');
     app.listen({ port }, () => {
-      console.log('Apollo Server on http://localhost:3100/graphql');
+      logger.info('Apollo server started on port ' + port);
     });
+
+    // course.getStudent
+    // film.setFestival
+    // film.addFestival
+    // film.addFestivals
   })
   .catch((err: any) => {
-    console.error('Unable to connect to the database:', err);
+    logger.error('Unable to connect to the database:', err);
     return;
   });
 

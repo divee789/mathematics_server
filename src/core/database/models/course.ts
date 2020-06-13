@@ -3,6 +3,11 @@ module.exports = (sequelize: any, DataTypes: any) => {
   const Course = sequelize.define(
     'courses',
     {
+      id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+      },
       title: {
         type: DataTypes.STRING(200),
         allowNull: false,
@@ -14,6 +19,10 @@ module.exports = (sequelize: any, DataTypes: any) => {
       credit_load: {
         type: DataTypes.INTEGER,
         allowNull: false,
+      },
+      level:{
+        type: DataTypes.INTEGER,
+        allowNull: false
       }
     },
     {},
@@ -22,13 +31,9 @@ module.exports = (sequelize: any, DataTypes: any) => {
     Course.belongsToMany(models.students, {
       through: 'course_students',
       as:'students',
-      foreign_key:'course_id'
+      foreign_key:'courseId'
     });
   };
   return Course;
 };
 
-// course.getStudent
-// film.setFestival
-// film.addFestival
-// film.addFestivals

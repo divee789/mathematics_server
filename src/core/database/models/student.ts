@@ -1,8 +1,16 @@
 'use strict';
+
+import bcrypt from 'bcryptjs';
+
 module.exports = (sequelize: any, DataTypes: any) => {
   const Student = sequelize.define(
     'students',
     {
+      id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+      },
       first_name: {
         type: DataTypes.STRING(200),
         allowNull: false,
@@ -39,6 +47,11 @@ module.exports = (sequelize: any, DataTypes: any) => {
         type: DataTypes.STRING(200),
         allowNull: false,
       },
+      is_admin: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
     },
     {},
   );
@@ -46,8 +59,22 @@ module.exports = (sequelize: any, DataTypes: any) => {
     Student.belongsToMany(models.courses, {
       through: 'course_students',
       as: 'courses',
-      foreign_key: 'student_id'
+      foreign_key: 'studentId',
     });
   };
+
+  Student.beforeCreate(async (student: any) => {
+    student.password = await student.generatePasswordHash();
+  });
+
+  Student.prototype.generatePasswordHash = async function () {
+    const saltRounds = 12;
+    return await bcrypt.hash(this.password, saltRounds);
+  };
+
+  Student.prototype.validatePassword = async function (password: string) {
+    return await bcrypt.compare(password, this.password);
+  };
+
   return Student;
 };

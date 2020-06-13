@@ -3,7 +3,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
   const course_students = sequelize.define(
     'course_students',
     {
-      course_id: {
+      courseId: {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
@@ -11,7 +11,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
           key: 'id',
         },
       },
-      student_id: {
+      studentId: {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
