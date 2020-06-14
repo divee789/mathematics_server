@@ -24,6 +24,11 @@ export default gql`
     addCourse(course_id: ID!): Message!
 
     removeCourse(course_id: ID!): Boolean
+
+    updateStudent: Student
+
+    deleteStudent(id: ID!): Boolean
+
   }
 
   type Token {
