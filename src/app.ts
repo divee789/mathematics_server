@@ -26,7 +26,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 // handle unexpected errors
 app.use(
   (err: any, req: express.Request, res: express.Response, next: express.NextFunction): void => {
@@ -34,7 +33,9 @@ app.use(
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-    logger.error(`${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+    logger.error(
+      `${err.status || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`,
+    );
 
     // render the error page
     res.status(err.status || 500);

@@ -4,18 +4,26 @@ export default gql`
   extend type Query {
     courses: [Course!]
     course(id: ID!): Course
-    course_students: [Student!]
+    course_students(id: ID!): courseStudents!
   }
 
   extend type Mutation {
-    createCourse(title: String!, code: String!, credit_load: Int!, level: Int!): Course!
+    createCourse(title: String!, code: String!, credit_load: Int!, semester: Int!): Course!
     deleteCourse(id: ID!): Boolean!
   }
 
+  type courseStudents {
+    students: [Student]!
+  }
+
   type Course {
+    id: ID!
     title: String!
     code: String!
     level: Int!
     credit_load: Int!
+    semester: Int!
   }
 `;
+
+

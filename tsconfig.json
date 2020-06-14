@@ -12,5 +12,7 @@
     "baseUrl": ".",
     "allowJs": true
   },
-  "include": ["src/**/*", "tests/core/validators/transfer.test.ts", "tests/core/validators/auth.test.ts"]
+  "include": [
+    "src/**/*"
+  ]
 }

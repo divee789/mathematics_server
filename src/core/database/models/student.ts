@@ -22,6 +22,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
       matriculation_number: {
         type: DataTypes.STRING(200),
         allowNull: false,
+        unique: true
       },
       level: {
         type: DataTypes.INTEGER,
@@ -30,6 +31,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
       email: {
         type: DataTypes.STRING(200),
         allowNull: true,
+        unique: true
       },
       password: {
         type: DataTypes.STRING(200),
@@ -38,6 +40,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
       phone_number: {
         type: DataTypes.STRING(200),
         allowNull: true,
+        unique:true
       },
       profile_image: {
         type: DataTypes.STRING(200),
@@ -51,6 +54,10 @@ module.exports = (sequelize: any, DataTypes: any) => {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
+      },
+      admin_level: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
       },
     },
     {},

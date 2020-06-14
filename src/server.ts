@@ -27,18 +27,28 @@ const server = new ApolloServer({
   typeDefs: schema,
   resolvers,
   context: async ({ req }: any) => {
-    let auth;
-    const token = req.headers.authorization;
-    if (token) {
-      try {
-        auth = await jwt.verify(token, process.env.TOKEN_SECRET);
-      } catch (e) {
-        console.log(e)
-        throw new AuthenticationError('Your session expired. Sign in again.');
+    let auth: any;
+    let student: any;
+    const authorization: string = req.headers.authorization;
+    const authParams = authorization?.split(' ');
+    if (authParams) {
+      const authType = authParams[0];
+      const authToken = authParams[1];
+      if (authToken && authType.toLowerCase() === 'bearer') {
+        try {
+          auth = await jwt.verify(authToken, process.env.TOKEN_SECRET);
+          student = await models.students.findOne({
+            where: {
+              id: auth.id,
+            },
+          });
+        } catch (e) {
+          throw new AuthenticationError('Your session expired. Sign in again.');
+        }
       }
     }
 
-    return { models, auth };
+    return { models, auth, student };
   },
 });
 

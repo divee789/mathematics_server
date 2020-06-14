@@ -8,27 +8,28 @@ module.exports = {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID,
-        defaultValue: uuidv4()
+        defaultValue: uuidv4(),
       },
       courseId: {
         type: Sequelize.UUID,
-        references: { model: 'courses', key: 'id' }
       },
       studentId: {
         type: Sequelize.UUID,
-        references: { model: 'students', key: 'id' }
+      },
+      grade:{
+        type: Sequelize.STRING(1)
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   down: (queryInterface, Sequelize) => {
     return queryInterface.dropTable('course_students');
-  }
+  },
 };

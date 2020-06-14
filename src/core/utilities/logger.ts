@@ -11,11 +11,11 @@ const logger = winston.createLogger({
     new winston.transports.File({
       filename: 'app.log',
       level: 'info',
-      silent: process.env.NODE_ENV === 'test'
+      silent: process.env.NODE_ENV === 'test',
     }),
     new winston.transports.Console({
       level: 'debug',
-      handleExceptions: true
+      handleExceptions: true,
     }),
   ],
 });

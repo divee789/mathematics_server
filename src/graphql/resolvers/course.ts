@@ -1,42 +1,53 @@
 import { combineResolvers } from 'graphql-resolvers';
-import { isAdmin } from './authorization';
+import { isAdmin, isAuthenticated } from './authorization';
 
 export default {
   Query: {
-    courses: async (parent: any, args: any, { models }: any) => {
+    courses: combineResolvers(isAuthenticated, async (parent: any, args: any, { models }: any) => {
       return await models.courses.findAll();
-    },
-    course: async (parent: any, { id }: { id: string }, { models }: any) => {
-      return await models.course.findByPk(id);
-    },
-    course_students: async (course: any, args: any, { models }: any) => {
-      return await models.course_students.findAll({
-        where: {
-          course_id: course.id,
-        },
-        include: [
-          {
-            model: models.students,
-            as: 'students',
+    }),
+    course: combineResolvers(
+      isAuthenticated,
+      async (parent: any, { id }: { id: string }, { models }: any) => {
+        return await models.courses.findByPk(id);
+      },
+    ),
+    course_students: combineResolvers(
+      isAdmin,
+      async (parent: any, { id }: { id: string }, { models }: any) => {
+        const courseStudents = await models.courses.findOne({
+          where: {
+            id,
           },
-        ],
-      });
-    },
+          include: [
+            {
+              model: models.students,
+              as: 'students',
+            },
+          ],
+        });
+        return courseStudents;
+      },
+    ),
   },
   Mutation: {
     createCourse: combineResolvers(
       isAdmin,
-      async (parent, { title, code, credit_load, level }, { models }) => {
+      async (parent, { title, code, credit_load, semester }, { models, student }) => {
         return await models.courses.create({
           title,
           code,
           credit_load,
-          level,
+          level: student.level,
+          semester
         });
       },
     ),
-    deleteCourse: async (parent: any, { id }: { id: string }, { models }: any) => {
-      return await models.courses.destroy({ where: { id } });
-    },
+    deleteCourse: combineResolvers(
+      isAdmin,
+      async (parent: any, { id }: { id: string }, { models }: any) => {
+        return await models.courses.destroy({ where: { id } });
+      },
+    ),
   },
 };

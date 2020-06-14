@@ -3,22 +3,14 @@ module.exports = (sequelize: any, DataTypes: any) => {
   const course_students = sequelize.define(
     'course_students',
     {
-      courseId: {
+      id: {
         type: DataTypes.UUID,
-        allowNull: false,
-        references: {
-          model: 'courses',
-          key: 'id',
-        },
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
       },
-      studentId: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        references: {
-          model: 'students',
-          key: 'id',
-        },
-      },
+      grade:{
+        type: DataTypes.STRING
+      }
     },
     {},
   );

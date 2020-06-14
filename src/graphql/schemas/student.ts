@@ -2,9 +2,10 @@ import { gql } from 'apollo-server-express';
 
 export default gql`
   extend type Query {
-    student(id: ID!): Student
-    students: [Student]
-    student_courses: [Course]!
+    student: Student!
+    students: [Student]!
+    student_courses: studentCourses!
+    studentsByYear: [Student]!
   }
 
   extend type Mutation {
@@ -15,17 +16,30 @@ export default gql`
       level: Int!
       password: String!
       department: String!
-      is_admin: Boolean!
+      is_admin: Boolean
     ): Token!
 
     logIn(matriculation_number: String!, password: String!): Token!
+
+    addCourse(course_id: ID!): Message!
+
+    removeCourse(course_id: ID!): Boolean
   }
 
   type Token {
     token: String!
   }
 
+  type Message {
+    message: String!
+  }
+
+  type studentCourses {
+    courses: [Course]!
+  }
+
   type Student {
+    id: ID!
     first_name: String!
     last_name: String!
     matriculation_number: String!

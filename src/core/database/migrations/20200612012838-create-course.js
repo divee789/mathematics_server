@@ -8,33 +8,39 @@ module.exports = {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID,
-        defaultValue: uuidv4()
+        defaultValue: uuidv4(),
       },
       title: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       code: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       credit_load: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
       },
-      level:{
+      level: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      semester: {
         type: Sequelize.INTEGER,
         allowNull: false
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   down: (queryInterface, Sequelize) => {
     return queryInterface.dropTable('courses');
-  }
+  },
 };

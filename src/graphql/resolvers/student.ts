@@ -1,34 +1,59 @@
 import jwt from 'jsonwebtoken';
-import { AuthenticationError, UserInputError } from 'apollo-server';
+import { AuthenticationError, UserInputError, ApolloError } from 'apollo-server';
+import { combineResolvers } from 'graphql-resolvers';
+import { isAuthenticated,  isSuperAdmin } from './authorization';
 
 const createToken = async (student: any) => {
   const { id } = student;
   return await jwt.sign({ id }, process.env.TOKEN_SECRET, {
-    expiresIn: '30m',
+    expiresIn: '50m',
   });
 };
 
 export default {
   Query: {
-    students: async (parent: any, args: any, { models }: any) => {
-      return await models.students.findAll();
-    },
-    student: async (parent: any, { id }: { id: string }, { models }: any) => {
-      return await models.students.findByPk(id);
-    },
-    student_courses: async (student: any, args: any, { models }: any) => {
-      return await models.course_students.findAll({
-        where: {
-          student_id: student.id,
-        },
-        include: [
-          {
-            model: models.courses,
-            as: 'courses',
+    students: combineResolvers(
+      isSuperAdmin,
+      async (parent: any, args: any, { models }: any) => {
+        return await models.students.findAll();
+      },
+    ),
+    student: combineResolvers(isAuthenticated, async (parent: any, args: any, { student }: any) => {
+      return student;
+    }),
+    student_courses: combineResolvers(
+      isAuthenticated,
+      async (parent: any, args: any, { models, auth }: any) => {
+       const result = await models.students.findOne({
+          where: {
+            id: auth.id,
           },
-        ],
-      });
-    },
+          include: [
+            {
+              model: models.courses,
+              as: 'courses',
+              through: {
+                model: models.course_students,
+                as: 'student_grade',
+                attributes: ['grade'],
+              }
+            },
+          ],
+        });
+        console.log(result.courses.student_grade)
+        return result
+      },
+    ),
+    studentsByYear: combineResolvers(
+      isAuthenticated,
+      async (parent: any, args: any, { models, student }: any) => {
+        return await models.students.findAll({
+          where: {
+            level: student.level,
+          },
+        });
+      },
+    ),
   },
 
   Mutation: {
@@ -41,7 +66,7 @@ export default {
         level,
         password,
         department,
-        is_admin
+        is_admin,
       }: {
         first_name: string;
         last_name: string;
@@ -49,7 +74,7 @@ export default {
         level: number;
         password: string;
         department: string;
-        is_admin: boolean;
+        is_admin?: boolean;
       },
       { models }: any,
     ) => {
@@ -60,7 +85,7 @@ export default {
         level,
         password,
         department,
-        is_admin
+        is_admin: is_admin ? true : false,
       });
 
       return { token: createToken(student) };
@@ -72,10 +97,10 @@ export default {
       { models }: any,
     ) => {
       const student = await models.students.findOne({
-        where:{
-          matriculation_number
-        }
-      })
+        where: {
+          matriculation_number,
+        },
+      });
 
       if (!student) {
         throw new UserInputError('No user found with this login credentials.');
@@ -89,5 +114,37 @@ export default {
 
       return { token: createToken(student) };
     },
+
+    addCourse: combineResolvers(
+      isAuthenticated,
+      async (parent: any, { course_id }: { course_id: string }, { models, student }: any) => {
+        const course = await models.courses.findOne({
+          where: {
+            id: course_id,
+          },
+        });
+        if (!course) {
+          throw new ApolloError('This course does not exist', '404');
+        }
+        await student.addCourse(course);
+        return { message: 'Course added successfully' };
+      },
+    ),
+
+    removeCourse: combineResolvers(
+      isAuthenticated,
+      async (parent: any, { course_id }: { course_id: string }, { models, student }: any) => {
+        const course = await models.courses.findOne({
+          where: {
+            id: course_id,
+          },
+        });
+        if (!course) {
+          throw new ApolloError('This course does not exist', '404');
+        }
+        await student.removeCourse(course);
+        return true;
+      },
+    ),
   },
 };
