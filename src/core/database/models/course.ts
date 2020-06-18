@@ -16,6 +16,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
       code: {
         type: DataTypes.STRING(10),
         allowNull: false,
+        unique: true,
       },
       credit_load: {
         type: DataTypes.INTEGER,
@@ -39,7 +40,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
       foreign_key: 'courseId',
     });
 
-    Course.belongsTo(models.lecturers, { as: 'course_lecturer' });
+    Course.belongsTo(models.lecturers, { as: 'lecturer' });
   };
   return Course;
 };

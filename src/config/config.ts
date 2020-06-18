@@ -8,7 +8,7 @@ const config = {
     database: 'mathematics_development',
     host: 'localhost',
     dialect: 'mysql',
-    // operatorsAliases: '0',
+    operatorsAliases: '0',
     // migrationStorage: 'sequelize',
     // migrationStorageTableName: 'sequelize_migration',
     // logging: true,

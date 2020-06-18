@@ -16,6 +16,16 @@ module.exports = (sequelize: any, DataTypes: any) => {
         type: DataTypes.STRING(200),
         allowNull: false,
       },
+      title: {
+        type: DataTypes.STRING(),
+        allowNull: false,
+      },
+      department: {
+        type: DataTypes.STRING(),
+      },
+      position: {
+        type: DataTypes.STRING(),
+      },
       phone_number: DataTypes.STRING,
       email: DataTypes.STRING,
       profile_image: DataTypes.STRING,
@@ -23,7 +33,7 @@ module.exports = (sequelize: any, DataTypes: any) => {
     {},
   );
   lecturer.associate = function (models: any) {
-    lecturer.hasMany(models.courses, { as:'course_lecturer' })
+    lecturer.hasMany(models.courses, { as: 'lecturer' });
   };
   return lecturer;
 };

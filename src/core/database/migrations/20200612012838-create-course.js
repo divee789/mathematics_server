@@ -16,7 +16,8 @@ module.exports = {
       },
       code: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
       },
       credit_load: {
         type: Sequelize.INTEGER,
@@ -29,6 +30,10 @@ module.exports = {
       semester: {
         type: Sequelize.INTEGER,
         allowNull: false
+      },
+      lecturerId: {
+        type: Sequelize.UUID,
+        allowNull: true
       },
       createdAt: {
         allowNull: false,

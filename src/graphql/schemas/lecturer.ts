@@ -4,7 +4,7 @@ export default gql`
   extend type Query {
     lecturer(id: ID!): Lecturer!
     lecturers: [Lecturer]!
-    lecturer_courses(id: ID!): lecturerCourses!
+    lecturer_courses(id: ID!): [Course]!
   }
 
   extend type Mutation {
@@ -32,9 +32,5 @@ export default gql`
     email: String
     phone_number: String
     profile_image: String
-  }
-
-  type lecturerCourses {
-    courses: [Course]!
   }
 `;

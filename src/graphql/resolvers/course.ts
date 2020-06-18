@@ -1,3 +1,4 @@
+import { ApolloError } from 'apollo-server';
 import { combineResolvers } from 'graphql-resolvers';
 import { isAdmin, isAuthenticated } from './authorization';
 
@@ -39,15 +40,34 @@ export default {
           code,
           credit_load,
           level: student.level,
-          semester
+          semester,
         });
       },
     ),
+
     deleteCourse: combineResolvers(
       isAdmin,
       async (parent: any, { id }: { id: string }, { models }: any) => {
         return await models.courses.destroy({ where: { id } });
       },
     ),
+
+    assignLecturer: combineResolvers(isAdmin, async (parent, { lecturer_id, id }, { models }) => {
+      const lecturer = await models.lecturers.findOne({
+        where: {
+          id: lecturer_id,
+        },
+      });
+      if (!lecturer) {
+        throw new ApolloError('This lecturer does not exist', '404');
+      }
+
+      const course = await models.courses.findByPk(id);
+      if (!course) {
+        throw new ApolloError('This course does not exist', '404');
+      }
+      await course.setLecturer(lecturer);
+      return { message: 'Lecturer assigned successfully' };
+    }),
   },
 };

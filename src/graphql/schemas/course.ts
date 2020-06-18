@@ -10,6 +10,7 @@ export default gql`
   extend type Mutation {
     createCourse(title: String!, code: String!, credit_load: Int!, semester: Int!): Course!
     deleteCourse(id: ID!): Boolean!
+    assignLecturer(lecturer_id: ID!, id: ID!): Message!
   }
 
   type courseStudents {
@@ -25,5 +26,3 @@ export default gql`
     semester: Int!
   }
 `;
-
-
