@@ -1,0 +1,2 @@
+export const NOTFOUND = 'RESOURCENOTFOUND';
+export const DUPLICATE = 'DUPLICATE';

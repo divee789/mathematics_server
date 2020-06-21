@@ -1,6 +1,7 @@
 import { ApolloError } from 'apollo-server';
 import { combineResolvers } from 'graphql-resolvers';
 import { isAdmin, isAuthenticated } from './authorization';
+import { NOTFOUND, DUPLICATE } from '../../core/constants';
 
 export default {
   Query: {
@@ -10,7 +11,11 @@ export default {
     course: combineResolvers(
       isAuthenticated,
       async (parent: any, { id }: { id: string }, { models }: any) => {
-        return await models.courses.findByPk(id);
+        const course = await models.courses.findByPk(id);
+        if (!course) {
+          throw new ApolloError('This course does not exist', NOTFOUND);
+        }
+        return course;
       },
     ),
     course_students: combineResolvers(
@@ -45,6 +50,20 @@ export default {
       },
     ),
 
+    editCourse: combineResolvers(
+      isAdmin,
+      async (parent, { id, title, code, credit_load, semester }, { models, student }) => {
+        const course = await models.courses.findByPk(id);
+        if (!course) throw new ApolloError('This course does not exist', NOTFOUND);
+        course.title = title;
+        course.code = code;
+        course.credit_load = credit_load;
+        course.semester = semester;
+        await course.save();
+        return course;
+      },
+    ),
+
     deleteCourse: combineResolvers(
       isAdmin,
       async (parent: any, { id }: { id: string }, { models }: any) => {
@@ -59,12 +78,12 @@ export default {
         },
       });
       if (!lecturer) {
-        throw new ApolloError('This lecturer does not exist', '404');
+        throw new ApolloError('This lecturer does not exist', NOTFOUND);
       }
 
       const course = await models.courses.findByPk(id);
       if (!course) {
-        throw new ApolloError('This course does not exist', '404');
+        throw new ApolloError('This course does not exist', NOTFOUND);
       }
       await course.setLecturer(lecturer);
       return { message: 'Lecturer assigned successfully' };

@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { AuthenticationError, UserInputError, ApolloError } from 'apollo-server';
 import { combineResolvers } from 'graphql-resolvers';
-import { isAuthenticated,  isSuperAdmin } from './authorization';
+import { isAuthenticated, isSuperAdmin } from './authorization';
+import { NOTFOUND } from '../../core/constants';
 
 const createToken = async (student: any) => {
   const { id } = student;
@@ -12,19 +13,16 @@ const createToken = async (student: any) => {
 
 export default {
   Query: {
-    students: combineResolvers(
-      isSuperAdmin,
-      async (parent: any, args: any, { models }: any) => {
-        return await models.students.findAll();
-      },
-    ),
+    students: combineResolvers(isSuperAdmin, async (parent: any, args: any, { models }: any) => {
+      return await models.students.findAll();
+    }),
     student: combineResolvers(isAuthenticated, async (parent: any, args: any, { student }: any) => {
       return student;
     }),
     student_courses: combineResolvers(
       isAuthenticated,
       async (parent: any, args: any, { models, auth }: any) => {
-       const result = await models.students.findOne({
+        const result = await models.students.findOne({
           where: {
             id: auth.id,
           },
@@ -36,12 +34,12 @@ export default {
                 model: models.course_students,
                 as: 'student_grade',
                 attributes: ['grade'],
-              }
+              },
             },
           ],
         });
-        console.log(result.courses.student_grade)
-        return result
+        console.log(result.courses.student_grade);
+        return result;
       },
     ),
     studentsByYear: combineResolvers(
@@ -103,17 +101,34 @@ export default {
       });
 
       if (!student) {
-        throw new UserInputError('No user found with this login credentials.');
+        throw new UserInputError('Invalid login credentials.');
       }
 
       const isValid = await student.validatePassword(password);
 
       if (!isValid) {
-        throw new AuthenticationError('Invalid password.');
+        throw new AuthenticationError('Invalid login credentials');
       }
 
       return { token: createToken(student) };
     },
+
+    editProfile: combineResolvers(
+      isAuthenticated,
+      async (
+        parent: any,
+        { first_name, last_name, matriculation_number, level, department },
+        { student },
+      ) => {
+        student.first_name = first_name;
+        student.last_name = last_name;
+        student.matriculation_number = matriculation_number;
+        student.level = level;
+        student.department = department;
+        await student.save();
+        return student;
+      },
+    ),
 
     addCourse: combineResolvers(
       isAuthenticated,
@@ -124,7 +139,7 @@ export default {
           },
         });
         if (!course) {
-          throw new ApolloError('This course does not exist', '404');
+          throw new ApolloError('This course does not exist', NOTFOUND);
         }
         await student.addCourse(course);
         return { message: 'Course added successfully' };
@@ -140,7 +155,7 @@ export default {
           },
         });
         if (!course) {
-          throw new ApolloError('This course does not exist', '404');
+          throw new ApolloError('This course does not exist', NOTFOUND);
         }
         await student.removeCourse(course);
         return true;

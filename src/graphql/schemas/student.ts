@@ -21,6 +21,14 @@ export default gql`
 
     logIn(matriculation_number: String!, password: String!): Token!
 
+    editProfile(
+      first_name: String!
+      last_name: String!
+      matriculation_number: String!
+      level: Int!
+      department: String!
+    ): Student!
+
     addCourse(course_id: ID!): Message!
 
     removeCourse(course_id: ID!): Boolean
@@ -28,7 +36,6 @@ export default gql`
     updateStudent: Student
 
     deleteStudent(id: ID!): Boolean
-
   }
 
   type Token {
