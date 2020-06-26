@@ -5,9 +5,22 @@ import { NOTFOUND, DUPLICATE } from '../../core/constants';
 
 export default {
   Query: {
+    testApi: async (parent: any, args: any, { models }: any) => {
+      return { message: ' We are good to go ' };
+    },
     courses: combineResolvers(isAuthenticated, async (parent: any, args: any, { models }: any) => {
       return await models.courses.findAll();
     }),
+    coursesByLevel: combineResolvers(
+      isAuthenticated,
+      async (parent: any, { level }: { level: number }, { models, student }: any) => {
+        return await models.courses.findAll({
+          where: {
+            level,
+          },
+        });
+      },
+    ),
     course: combineResolvers(
       isAuthenticated,
       async (parent: any, { id }: { id: string }, { models }: any) => {

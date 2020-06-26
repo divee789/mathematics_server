@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { AuthenticationError, UserInputError, ApolloError } from 'apollo-server';
 import { combineResolvers } from 'graphql-resolvers';
 import { isAuthenticated, isSuperAdmin } from './authorization';
-import { NOTFOUND } from '../../core/constants';
+import { NOTFOUND, DUPLICATE } from '../../core/constants';
 
 const createToken = async (student: any) => {
   const { id } = student;
@@ -76,6 +76,12 @@ export default {
       },
       { models }: any,
     ) => {
+      const duplicate = await models.students.findOne({
+        where: {
+          matriculation_number,
+        },
+      });
+      if (duplicate) throw new AuthenticationError('This student already exists');
       const student = await models.students.create({
         first_name,
         last_name,

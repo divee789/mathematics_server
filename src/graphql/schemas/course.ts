@@ -2,7 +2,9 @@ import { gql } from 'apollo-server-express';
 
 export default gql`
   extend type Query {
+    testApi: Message!
     courses: [Course!]
+    coursesByLevel(level: Int!): [Course!]
     course(id: ID!): Course
     course_students(id: ID!): courseStudents!
   }
