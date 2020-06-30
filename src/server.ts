@@ -16,7 +16,7 @@ import logger from './core/utilities/logger';
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || '3100');
+const port = normalizePort(process.env.PORT || '7001');
 app.set('port', port);
 
 /**
