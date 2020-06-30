@@ -21,16 +21,19 @@ app.set('port', port);
 
 /**
  * Create Apollo server.
+ *
  */
+
+const apolloCustomResolvers: any = resolvers;
 
 const server = new ApolloServer({
   typeDefs: schema,
-  resolvers,
+  resolvers: apolloCustomResolvers,
   context: async ({ req }: any) => {
     let auth: any;
     let student: any;
     const authorization: string = req.headers.authorization;
-    const authParams = authorization?.split(' ');
+    const authParams = authorization ? authorization.split(' ') : null;
     if (authParams) {
       const authType = authParams[0];
       const authToken = authParams[1];
