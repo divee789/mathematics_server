@@ -20,6 +20,9 @@ export default gql`
       last_name: String!
       phone_number: String
       email: String
+      title: String
+      department: String
+      position: String
     ): Lecturer!
 
     deleteLecturer(id: ID!): Boolean!
@@ -30,6 +33,9 @@ export default gql`
     first_name: String!
     last_name: String!
     email: String
+    position: String
+    title: String!
+    department: String
     phone_number: String
     profile_image: String
   }

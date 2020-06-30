@@ -14,11 +14,18 @@ export default {
     coursesByLevel: combineResolvers(
       isAuthenticated,
       async (parent: any, { level }: { level: number }, { models, student }: any) => {
-        return await models.courses.findAll({
+        const courses = await models.courses.findAll({
           where: {
             level,
           },
+          include: [
+            {
+              model: models.lecturers,
+              as: 'lecturer',
+            },
+          ],
         });
+        return courses;
       },
     ),
     course: combineResolvers(

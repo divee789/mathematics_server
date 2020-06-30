@@ -27,5 +27,6 @@ export default gql`
     level: Int!
     credit_load: Int!
     semester: Int!
+    lecturer: Lecturer
   }
 `;
