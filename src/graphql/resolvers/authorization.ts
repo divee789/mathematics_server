@@ -26,7 +26,7 @@ export const isAdmin = combineResolvers(
 export const isSuperAdmin = combineResolvers(
   isAdmin,
   async (parent: any, args: any, { student }: any) => {
-    if (student.admin_level < 5) {
+    if (+student.admin_level < 5) {
       throw new ForbiddenError('You need God Mode privileges to run this query');
     } else {
       return skip;

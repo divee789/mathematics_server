@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { AuthenticationError, UserInputError, ApolloError } from 'apollo-server';
 import { combineResolvers } from 'graphql-resolvers';
 import { isAuthenticated, isSuperAdmin } from './authorization';
-import { NOTFOUND, DUPLICATE } from '../../core/constants';
+import { NOTFOUND } from '../../core/constants';
 
 const createToken = async (student: any) => {
   const { id } = student;
@@ -38,7 +38,6 @@ export default {
             },
           ],
         });
-        console.log(result.courses.student_grade);
         return result;
       },
     ),
@@ -132,7 +131,7 @@ export default {
         student.level = level;
         student.department = department;
         await student.save();
-        return student;
+        return { message: 'Student Updated Successfully' };
       },
     ),
 
@@ -164,7 +163,7 @@ export default {
           throw new ApolloError('This course does not exist', NOTFOUND);
         }
         await student.removeCourse(course);
-        return true;
+        return { message: 'Course removed successfully' };
       },
     ),
   },

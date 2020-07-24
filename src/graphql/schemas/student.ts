@@ -31,9 +31,9 @@ export default gql`
 
     addCourse(course_id: ID!): Message!
 
-    removeCourse(course_id: ID!): Boolean
+    removeCourse(course_id: ID!): Message!
 
-    updateStudent: Student
+    updateStudent: Message!
 
     deleteStudent(id: ID!): Boolean
   }
