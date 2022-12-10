@@ -63,7 +63,7 @@
     "debug": "~2.6.9",
     "dotenv": "^8.1.0",
     "ejs": "~2.6.1",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "graphql": "^15.1.0",
     "graphql-resolvers": "^0.4.2",
     "helmet": "^3.22.0",
